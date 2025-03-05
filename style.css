@@ -10,6 +10,12 @@ body{
     display: flex;
     flex-direction: column;
 }
+input {
+    border: none;
+    outline: none;
+    text-align: center;
+    padding: 5px;
+}
 .cabecalho{
     display: flex;
     flex-direction: column;
@@ -91,12 +97,6 @@ td{
     tbody tr td:first-child{
         padding: 5px;
     }
-    & input{
-        border: none;
-        outline: none;
-        text-align: center;
-        padding: 5px;
-    }
     & input[type="text"]{
         width: 100%;
     }
@@ -106,10 +106,17 @@ td{
 }
 
 #table2{
+    font-size: 0.8rem;
 
     & tbody tr td input{
         display: block;
-        width: 15ch;
+        max-width: 15ch;
         text-align: center;
     }
+    & tbody tr td:first-child{
+        padding: 5px;
+    }
+}
+input::-webkit-inner-spin-button{
+    appearance: none;
 }
