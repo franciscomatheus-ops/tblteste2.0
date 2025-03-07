@@ -44,10 +44,10 @@ function CriacaoTwoTables() {
         PartidasAbates += `
             <tr>
                 <td>#${x}</td>
-                <td><input type=number></td>
-                <td><input type=number></td>
-                <td><input type=number></td>
-                <td><input type=number></td>
+                <td><input type=number id=p1q${x} oninput="KillUpdate(this.id, this.value)"></td>
+                <td><input type=number id=p2q${x} oninput="KillUpdate(this.id, this.value)"></td>
+                <td><input type=number id=p3q${x} oninput="KillUpdate(this.id, this.value)"></td>
+                <td><input type=number id=p4q${x} oninput="KillUpdate(this.id, this.value)"></td>
             </tr>`;
     }
 
@@ -132,6 +132,17 @@ function validarTable() {
             document.getElementById('res').innerText = L.res;
         }
     })
+    for (let x = 1; x <= 4; x++) {
+        for (let y = 1; y <= Configs.Menu.Quedas; y++) {
+            let key = `p${x}q${y}`;
+
+            Configs.Player.forEach(p => {
+                if (p.PlayerIDLine == Configs.Menu.LineChose && p.hasOwnProperty(key)) {
+                    document.getElementById(key).value = p[key] != 0 ? p[key] : '';
+                }
+            })
+        }
+    }
 }
 
 function ValueUpdate(id, value, ponto) {
@@ -155,3 +166,74 @@ function ValueUpdate(id, value, ponto) {
 
     SendArray(Configs);
 }
+function KillUpdate(id, value) {
+    let Configs = JSON.parse(localStorage.getItem('Configs'));
+    
+    Configs.Player.forEach(l => {
+        if (Configs.Menu.LineChose == l.PlayerIDLine && l.hasOwnProperty(id)) {
+            l[id] = value != '' ? parseInt(value) : 0;
+            let t = 0;
+            for (let x = 1; x <= Configs.Menu.Quedas; x++){
+                t += parseInt(l[`${id.substring(0, 2)}q${x}`]);
+            }
+            l.KT = t;
+        }
+    })
+
+    SendArray(Configs);
+    
+}
+
+function ShowFullTable() {
+    let table = JSON.parse(localStorage.getItem('Configs'));
+    if (!table.Menu.TableShow) {
+        return true;
+    }
+    console.log(table);
+    
+    
+    table.Lines.sort((a, b) => {
+        if (a.res == b.res) {
+            let ak = 0;
+            let bk = 0;
+            for (let x = 1; x <= 5; x++) {
+                ak += a[`a${x}`] || 0;
+                bk += b[`a${x}`] || 0;
+            }
+            return bk - ak;
+        }
+        else {
+            return b.res - a.res
+        }
+    });
+    table.Player.sort((a, b) => {
+        return b.KT - a.KT;
+    })
+    console.log(table.Player);
+    
+    let id = 0;
+    table.Lines.forEach(l => {
+        id++;
+        let p = 0;
+        let a = 0;
+        for (let x = 1; x <= table.Menu.Quedas; x++){
+            p += l[`p${x}`];
+            a += l[`a${x}`];
+        }
+        document.getElementById('tbodyEnd').innerHTML += `
+            <tr>
+                <td>${id}º</td>
+                <td>${l.NameLine}</td>
+                <td>${p}</td>
+                <td>${a}</td>
+                <td>${l.res}</td>
+            </tr>
+        `;
+    })
+
+    console.log(table.Lines);
+}
+
+
+// let x = 'p1p3';
+// let CaracterX2 = x.substring(0, 2);
